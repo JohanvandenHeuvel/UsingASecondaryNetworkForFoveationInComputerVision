@@ -1,8 +1,27 @@
 import torch
 import numpy as np
-import math
 import random
 import matplotlib.pyplot as plt
+
+from custom_dataset import ImageLoaderCustom
+
+
+
+def loader(root, transform, batch_size, shuffle):
+    dataset = ImageLoaderCustom(
+        root=root,
+        transform=transform)
+    dataloader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=0)
+
+    # dictionary containing order in which folders are loaded in
+    # here class equals folder name
+    idx_to_class = {v: k for k, v in dataset.class_to_idx.items()}
+
+    return dataloader, idx_to_class
 
 
 def im_show(img):
@@ -27,12 +46,12 @@ def path_to_image_name(path, class_name):
     return t3
 
 
-def image_reward(image_name, Q_Table, action=-1):
+def image_reward(image_name, q_table, action=-1):
     """
     looks up image reward in Q_table
     e.g. image_reward('n01531178_1006', 5) returns 1.012576460838318
     """
-    for _, row in Q_Table[Q_Table['class'] == image_name].iterrows():
+    for _, row in q_table[q_table['class'] == image_name].iterrows():
         if action == -1:
             return row
         else:

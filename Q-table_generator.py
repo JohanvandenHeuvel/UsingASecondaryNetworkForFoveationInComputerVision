@@ -10,7 +10,7 @@ import time
 import sys
 
 from custom_dataset import ImageLoaderCustom
-import helper_functions as hf
+import functions as hf
 
 """
 HAVE TO MANUALLY FILL IN CORRECT BATCH SIZE AND COLUMN NAMES
