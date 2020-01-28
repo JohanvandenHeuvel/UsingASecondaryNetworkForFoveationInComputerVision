@@ -1,15 +1,12 @@
 import torch
-import torchvision
 import torchvision.models as models
-import torchvision.transforms as T
 
 import numpy as np
 import random
 import pandas as pd
-import time
 import sys
+from tqdm import tqdm
 
-from custom_dataset import ImageLoaderCustom
 import functions as f
 from parameters import DEVICE, TRANSFORM, N_ACTIONS, CLSIDX
 
@@ -112,18 +109,14 @@ def test(data):
 
 def generate_qtable(data):
     losses = pd.DataFrame()
-    i = 0
-    for images, labels, paths in data:
+    for images, labels, paths in tqdm(data):
 
         assert len(images) == N_ACTIONS, "batch_size not equal to n_actions"
-
-        start = time.time()
-        i = i + len(images)
 
         # get image name for this batch
         # i.e. for the form class_sample
         # this class_sample is used once for every foveation point
-        class_sample = idx_to_class[labels.data.cpu().numpy()[0]]
+        class_sample = idx_to_class[labels[0].item()]
         image_class = class_sample.split('_')[0]
 
         # hardcoded image sample name location in path
@@ -143,34 +136,33 @@ def generate_qtable(data):
 
         loss = loss_function(results, target_tensor.long())
 
-        arr = [s] + list(loss.data.cpu().numpy())
+        arr = [s] + loss.tolist()
         losses = losses.append([arr])
 
-        end = time.time()
-        if i % 50 == 0:
-            print('time:', str(end-start), 'i:{}/{}'.format(i, len(data) * len(images)))
-
-    # hardcoded for now
-    # losses.columns =["class", "score"]
-    losses.columns = ["class",
-                      str((1, 1)), str((3, 1)), str((5, 1)), str((7, 1)), str((9, 1)),
-                      str((1, 3)), str((3, 3)), str((5, 3)), str((7, 3)), str((9, 3)),
-                      str((1, 5)), str((3, 5)), str((5, 5)), str((7, 5)), str((9, 5)),
-                      str((1, 7)), str((3, 7)), str((5, 7)), str((7, 7)), str((9, 7)),
-                      str((1, 9)), str((3, 9)), str((5, 9)), str((7, 9)), str((9, 9))]
-    losses.to_csv('Q_tables/Q_table_new.csv', sep=",", index=False)
+    return losses
 
 
 if __name__ == '__main__':
 
-    # image_classifier = models.vgg16(pretrained=True)
-    image_classifier = models.mobilenet_v2(pretrained=True)
+    image_classifier = models.vgg16(pretrained=True)
+    # image_classifier = models.mobilenet_v2(pretrained=True)
     image_classifier.to(DEVICE)
     image_classifier.eval()
 
     loss_function = torch.nn.CrossEntropyLoss(reduce=False)
 
     # data path to the non-foveated images
-    DATA_PATH = sys.argv[1]
+    DATA_PATH = "E:\\ILSVRC2017\\strongfoveation\\foveated"
     loader, idx_to_class = f.loader(DATA_PATH, TRANSFORM, batch_size=N_ACTIONS, shuffle=False)
     print("using model {} with batch size of {}".format(image_classifier.__class__.__name__, N_ACTIONS))
+
+    qtable = generate_qtable(loader)
+    # hardcoded for now
+    # qtable.columns =["class", "score"]
+    qtable.columns = ["class",
+                      str((1, 1)), str((3, 1)), str((5, 1)), str((7, 1)), str((9, 1)),
+                      str((1, 3)), str((3, 3)), str((5, 3)), str((7, 3)), str((9, 3)),
+                      str((1, 5)), str((3, 5)), str((5, 5)), str((7, 5)), str((9, 5)),
+                      str((1, 7)), str((3, 7)), str((5, 7)), str((7, 7)), str((9, 7)),
+                      str((1, 9)), str((3, 9)), str((5, 9)), str((7, 9)), str((9, 9))]
+    qtable.to_csv('Q_tables/Q_table_new.csv', sep=",", index=False)
