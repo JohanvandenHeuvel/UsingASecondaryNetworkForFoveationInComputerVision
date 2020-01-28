@@ -21,7 +21,7 @@ def image_reward(img_name, action):
         return row[action + 1]
 
 
-def save_checkpoint(state, foo, epoch_count):
+def save_checkpoint(state, _, epoch_count):
     print("saving checkpoint")
     f_path = 'checkpoints\\checkpoint_{}.pt'.format(epoch_count)
     torch.save(state, f_path)
@@ -62,12 +62,6 @@ def train_model(model, optimizer, training_data):
 
         running_loss += loss.item()
 
-    checkpoint = {
-        'epoch': epoch + 1,
-        'state_dict': model.state_dict(),
-        'optimizer': optimizer.state_dict()
-    }
-    save_checkpoint(checkpoint, CHECKPOINT_DIR, epoch)
     print("running [training] loss over {} batches".format(n_batches), running_loss)
 
 
@@ -94,7 +88,6 @@ def validate_model(model, test_data):
             actual_action_reward = torch.tensor([image_reward(image_name[i], actions[i]) for i in range(len(images))],
                                                 device=DEVICE)
             # Actual rewards by using center action
-            # TODO how can center_rewards with action 13 come to a different percentage of equal results then center with action 13
             center_rewards = torch.tensor([image_reward(image_name[i], 12) for i in range(len(images))], device=DEVICE)
 
             loss = F.mse_loss(predicted_action_reward, actual_action_reward.unsqueeze(1))
@@ -105,17 +98,14 @@ def validate_model(model, test_data):
             target_list += center_rewards.tolist()
 
             # TODO this is wrong
-            center = torch.tensor([torch.ones([1, 1]) * 12 for _ in range(len(images))], dtype=torch.long, device=DEVICE)
-            center_count += (actions == center).sum().item()
+            # center = torch.tensor([torch.ones([1, 1]) * 12 for _ in range(len(images))], dtype=torch.long, device=DEVICE)
+            # center_count += (actions == center).sum().item()
 
         print("running [validation] loss over {} batches".format(n_batches_test), running_loss_val)
         # TODO fix hard coding 500 for test set length
         # TODO equal print here is wrong
         # print('Equal performance of the network to center on the 500 test images: %d %%' % (100 * center_count / 500))
 
-        # losses = pd.DataFrame(
-        #     [np.array(target_list), np.array(predicted_list)]).transpose()
-        # losses.columns = ['target', 'predicted']
         s.print_results(target_results=target_list, predicted_results=predicted_list)
 
 
@@ -207,7 +197,15 @@ if __name__ == '__main__':
     # ckp_path = CHECKPOINT_DIR + 'checkpoint_29.pt'
     # m, o, start_epoch = load_checkpoint(ckp_path, m, o)
 
-    for epoch in range(1):
+    for epoch in range(N_EPOCHS):
         print('Epoch {}'.format(epoch))
         train_model(m, o, loader_train)
-        #validate_model(m, loader_test)
+
+        checkpoint = {
+            'epoch': epoch + 1,
+            'state_dict': m.state_dict(),
+            'optimizer': o.state_dict()
+        }
+        save_checkpoint(checkpoint, CHECKPOINT_DIR, epoch)
+
+        validate_model(m, loader_test)
