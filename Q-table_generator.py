@@ -10,63 +10,8 @@ import time
 import sys
 
 from custom_dataset import ImageLoaderCustom
-import functions as hf
-
-"""
-HAVE TO MANUALLY FILL IN CORRECT BATCH SIZE AND COLUMN NAMES
-"""
-
-# if gpu is to be used
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# image_classifier = models.vgg16(pretrained=True)
-image_classifier = models.mobilenet_v2(pretrained=True)
-image_classifier.to(device)
-image_classifier.eval()
-
-# data path to the non-foveated images
-DATA_PATH = sys.argv[1]
-BATCH_SIZE = 25
-
-# no need to resize and crop as images are pre-processed by the foveation code using cv2 resize and crop
-normalize = T.Normalize(mean=[0.485, 0.456, 0.406],
-                        std=[0.229, 0.224, 0.225])
-composed = T.Compose([T.ToTensor(),
-                      normalize])
-
-# dataset structure for pytorch
-dataset = ImageLoaderCustom(
-    root=DATA_PATH,
-    transform=composed)
-
-loader = torch.utils.data.DataLoader(
-    dataset,
-    batch_size=BATCH_SIZE,
-    shuffle=False,
-    num_workers=0)
-testLoader = torch.utils.data.DataLoader(
-    dataset,
-    batch_size=BATCH_SIZE,
-    shuffle=False,
-    num_workers=0)
-
-testSampler = iter(testLoader)
-
-loss_function = torch.nn.CrossEntropyLoss(reduce=False)
-
-# csv containing idx_to_label
-with open('imagenet1000_clsidx_to_labels.txt', 'r') as inf:
-    classes = eval(inf.read())
-
-# file containing clsname_to_clsidx
-with open('imagenet1000_clsname_to_clsidx.txt', 'r') as inf:
-    clsidx = eval(inf.read())
-
-# dictionary containing order in which folders are loaded in
-# here class equals folder name
-idx_to_class = {v: k for k, v in dataset.class_to_idx.items()}
-
-print("using model {} with batch size of {}".format(image_classifier.__class__.__name__, BATCH_SIZE))
+import functions as f
+from parameters import DEVICE, TRANSFORM, N_ACTIONS, CLSIDX
 
 
 # Single results
@@ -95,11 +40,11 @@ def single_results(images, labels, paths):
         image_class = class_sample.split('_')[0]
 
         # get target by looking up class name in order of data
-        target = clsidx[image_class]
-        target_tensor = torch.ones([1], device=device) * target
+        target = CLSIDX[image_class]
+        target_tensor = torch.ones([1], device=DEVICE) * target
 
         # feedforward trough pretrained net
-        image = image.to(device)
+        image = image.to(DEVICE)
         result = image_classifier(image.unsqueeze(0))
 
         loss = loss_function(result, target_tensor.long())
@@ -119,18 +64,18 @@ def batch_result(images, labels, paths):
     image_class = class_sample.split('_')[0]
 
     # get target by looking up class name in order of data
-    target = clsidx[image_class]
+    target = CLSIDX[image_class]
 
     # hardcoded image sample name location in path
     p = paths[0]
     s = p.split('\\')[5]
 
-    target_tensor = torch.ones([BATCH_SIZE], device=device) * target
+    target_tensor = torch.ones([len(images)], device=DEVICE) * target
 
     print(images.shape)
 
     # feedforward trough pretrained net
-    images = images.to(device)
+    images = images.to(DEVICE)
     results = image_classifier(images)
 
     loss = loss_function(results, target_tensor.long())
@@ -140,72 +85,92 @@ def batch_result(images, labels, paths):
     return arr
 
 
-randomint = 1 + random.randint(0, len(testLoader))
-randomint = 1
-print("selecting {}th batch ...".format(randomint))
-for i in range(randomint):
-    images, labels, paths = testSampler.next()
-print("loaded {}th batch".format(randomint))
+def test(data):
+    # randomint = 1 + random.randint(0, len(testLoader))
+    randomint = 1
 
-single = single_results(images, labels, paths)
-batch = batch_result(images, labels, paths)
+    check_sample = iter(data)
 
-single_class, (fovpoints, single_losses) = single[0], zip(*single[1:])
-batch_class, batch_target, batch_losses = batch[0], batch[1], batch[2:]
+    print("selecting {}th batch ...".format(randomint))
+    for i in range(randomint):
+        images, labels, paths = check_sample.__next__()
+    print("loaded {}th batch".format(randomint))
 
-losses = list(zip(single_losses, batch_losses))
-result = list(zip(fovpoints, losses))
+    single = single_results(images, labels, paths)
+    batch = batch_result(images, labels, paths)
 
-print("results for image {} with target {}".format(batch_class, batch_target))
-print("showing (fov point, (single result, batch result))")
-print(result)
+    single_class, (fovpoints, single_losses) = single[0], zip(*single[1:])
+    batch_class, batch_target, batch_losses = batch[0], batch[1], batch[2:]
 
-# losses = pd.DataFrame()
+    losses = list(zip(single_losses, batch_losses))
+    result = list(zip(fovpoints, losses))
 
-# i = 0
+    print("results for image {} with target {}".format(batch_class, batch_target))
+    print("showing (fov point, (single result, batch result))")
+    print(result)
 
-# for images, labels, paths in loader:
-#     start = time.time()
-#     i = i + BATCH_SIZE
 
-#     # get image name for this batch
-#     # i.e. for the form class_sample
-#     # this class_sample is used once for every foveation point
-#     class_sample = idx_to_class[labels.data.cpu().numpy()[0]] 
-#     image_class = class_sample.split('_')[0]
+def generate_qtable(data):
+    losses = pd.DataFrame()
+    i = 0
+    for images, labels, paths in data:
 
-#     # hardcoded image sample name location in path
-#     image_path, extension = paths[0].split('.jpg')
-#     s = image_path.split('\\')[-1]
-#     if "RT" in s:
-#         # foveated images have their foveation location in the name which we don't want
-#         s = '_'.join(s.split('_')[:2])
+        assert len(images) == N_ACTIONS, "batch_size not equal to n_actions"
 
-#     # get target by looking up class name in order of data
-#     target = clsidx[image_class]
-#     target_tensor = torch.ones([BATCH_SIZE], device=device) * target
+        start = time.time()
+        i = i + len(images)
 
-#     # feedforward trough pretrained net
-#     images = images.to(device)
-#     results = image_classifier(images)
+        # get image name for this batch
+        # i.e. for the form class_sample
+        # this class_sample is used once for every foveation point
+        class_sample = idx_to_class[labels.data.cpu().numpy()[0]]
+        image_class = class_sample.split('_')[0]
 
-#     loss = loss_function(results, target_tensor.long())
+        # hardcoded image sample name location in path
+        image_path, extension = paths[0].split('.jpg')
+        s = image_path.split('\\')[-1]
+        # foveated images have their foveation location in the name which we don't want
+        if "RT" in s:
+            s = '_'.join(s.split('_')[:2])
 
-#     arr = [s] + list(loss.data.cpu().numpy())
-#     losses = losses.append([arr])
+        # get target by looking up class name in order of data
+        target = CLSIDX[image_class]
+        target_tensor = torch.ones([len(images)], device=DEVICE) * target
 
-#     end = time.time()
-#     if i % 50 == 0:
-#         print('time:', str(end-start), 'i:{}/{}'.format(i, len(loader)*BATCH_SIZE))
+        # feedforward trough pre-trained net
+        images = images.to(DEVICE)
+        results = image_classifier(images)
 
-#     # time.sleep(1)
+        loss = loss_function(results, target_tensor.long())
 
-# # hardcoded for now
-# # losses.columns =["class", "score"]
-# losses.columns =["class", 
-#       str((1,1)), str((1,3)), str((1,5)), str((1,7)), str((1,9)),
-#       str((3,1)), str((3,3)), str((3,5)), str((3,7)), str((3,9)),
-#       str((5,1)), str((5,3)), str((5,5)), str((5,7)), str((5,9)),
-#       str((7,1)), str((7,3)), str((7,5)), str((7,7)), str((7,9)),
-#       str((9,1)), str((9,3)), str((9,5)), str((9,7)), str((9,9))]
-# losses.to_csv('Q_tables/Q_table_new.csv', sep=",", index=False)
+        arr = [s] + list(loss.data.cpu().numpy())
+        losses = losses.append([arr])
+
+        end = time.time()
+        if i % 50 == 0:
+            print('time:', str(end-start), 'i:{}/{}'.format(i, len(data) * len(images)))
+
+    # hardcoded for now
+    # losses.columns =["class", "score"]
+    losses.columns = ["class",
+                      str((1, 1)), str((3, 1)), str((5, 1)), str((7, 1)), str((9, 1)),
+                      str((1, 3)), str((3, 3)), str((5, 3)), str((7, 3)), str((9, 3)),
+                      str((1, 5)), str((3, 5)), str((5, 5)), str((7, 5)), str((9, 5)),
+                      str((1, 7)), str((3, 7)), str((5, 7)), str((7, 7)), str((9, 7)),
+                      str((1, 9)), str((3, 9)), str((5, 9)), str((7, 9)), str((9, 9))]
+    losses.to_csv('Q_tables/Q_table_new.csv', sep=",", index=False)
+
+
+if __name__ == '__main__':
+
+    # image_classifier = models.vgg16(pretrained=True)
+    image_classifier = models.mobilenet_v2(pretrained=True)
+    image_classifier.to(DEVICE)
+    image_classifier.eval()
+
+    loss_function = torch.nn.CrossEntropyLoss(reduce=False)
+
+    # data path to the non-foveated images
+    DATA_PATH = sys.argv[1]
+    loader, idx_to_class = f.loader(DATA_PATH, TRANSFORM, batch_size=N_ACTIONS, shuffle=False)
+    print("using model {} with batch size of {}".format(image_classifier.__class__.__name__, N_ACTIONS))

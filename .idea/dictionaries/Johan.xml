@@ -5,6 +5,8 @@
       <w>convh</w>
       <w>convw</w>
       <w>cuda</w>
+      <w>foveated</w>
+      <w>foveation</w>
       <w>optim</w>
       <w>wilcoxon</w>
     </words>
