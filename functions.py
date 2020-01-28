@@ -2,10 +2,15 @@ import torch
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+import pandas as pd
 
 from custom_dataset import ImageLoaderCustom
 
-
+def minimum_values(df):
+    weak_min = []
+    for i, row in df.iterrows():
+        weak_min.append(row[1:].min())
+    weak_min = pd.Series(weak_min)
 
 def loader(root, transform, batch_size, shuffle):
     dataset = ImageLoaderCustom(

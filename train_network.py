@@ -25,7 +25,7 @@ def save_checkpoint(state, _, epoch_count):
     print("saving checkpoint")
     f_path = 'checkpoints\\checkpoint_{}.pt'.format(epoch_count)
     torch.save(state, f_path)
-    # if is_best:hor
+    # if is_best:
     #     best_fpath = 'checkpoints\\best_model.pt'
     #     shutil.copyfile(f_path, best_fpath)
 
