@@ -16,7 +16,7 @@ from retina_transform import generate_foveation_points
 def single_results(images, labels, paths):
     arr = []
 
-    # hardcoded image sample name location in path
+    # hardcoded image sample name location in read_path
     p = paths[0]
     s = p.split('\\')[5]
 
@@ -64,7 +64,7 @@ def batch_result(images, labels, paths):
     # get target by looking up class name in order of data
     target = CLSIDX[image_class]
 
-    # hardcoded image sample name location in path
+    # hardcoded image sample name location in read_path
     p = paths[0]
     s = p.split('\\')[5]
 
@@ -120,7 +120,7 @@ def generate_qtable(data):
         class_sample = idx_to_class[labels[0].item()]
         image_class = class_sample.split('_')[0]
 
-        # hardcoded image sample name location in path
+        # hardcoded image sample name location in read_path
         image_path, extension = paths[0].split('.jpg')
         s = image_path.split('\\')[-1]
         # foveated images have their foveation location in the name which we don't want
@@ -155,7 +155,7 @@ if __name__ == '__main__':
 
     loss_function = torch.nn.CrossEntropyLoss(reduce=False)
 
-    # data path to the non-foveated images
+    # data read_path to the non-foveated images
     DATA_PATH = "E:\\ILSVRC2017\\weakfoveation\\foveated"
     # DATA_PATH = sys.argv[1]
     loader, idx_to_class = f.loader(DATA_PATH, TRANSFORM, batch_size=N_ACTIONS, shuffle=False)

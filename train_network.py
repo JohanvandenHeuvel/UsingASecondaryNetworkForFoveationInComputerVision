@@ -115,10 +115,10 @@ def plot_model(model, data):
     #
     # with torch.no_grad():
     #     for i in range(3):
-    #         image, label, path = check_sample.__next__()
+    #         image, label, read_path = check_sample.__next__()
     #
     #         image_class = idx_to_class_plot[label.item()]
-    #         image_name = f.path_to_image_name(path[0], image_class)
+    #         image_name = f.path_to_image_name(read_path[0], image_class)
     #         suffix = "epoch{}_sample{}".format(epoch, i)
     #
     #         # Image

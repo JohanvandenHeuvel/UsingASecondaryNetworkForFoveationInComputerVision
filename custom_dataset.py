@@ -45,7 +45,7 @@ def make_dataset(dir, class_to_idx):
 
 
 def pil_loader(path):
-    # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
+    # open read_path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
     with open(path, 'rb') as f:
         with Image.open(f) as img:
             return img.convert('RGB')
@@ -80,18 +80,18 @@ class ImageLoaderCustom(data.Dataset):
         root/cat/asd932_.png
 
     Args:
-        root (string): Root directory path.
+        root (string): Root directory read_path.
         transform (callable, optional): A function/transform that  takes in an PIL image
             and returns a transformed version. E.g, ``transforms.RandomCrop``
         target_transform (callable, optional): A function/transform that takes in the
             target and transforms it.
-        loader (callable, optional): A function to load an image given its path.
-        is_valid_file (callable, optional): A function that takes path of an Image file
+        loader (callable, optional): A function to load an image given its read_path.
+        is_valid_file (callable, optional): A function that takes read_path of an Image file
             and check if the file is a valid file (used to check of corrupt files)
      Attributes:
         classes (list): List of the class names.
         class_to_idx (dict): Dict with items (class_name, class_index).
-        imgs (list): List of (image path, class_index) tuples
+        imgs (list): List of (image read_path, class_index) tuples
     """
 
     def __init__(self, root, transform=None, target_transform=None,
