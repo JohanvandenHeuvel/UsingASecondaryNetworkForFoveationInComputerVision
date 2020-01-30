@@ -71,6 +71,7 @@ def validate_model(model, test_data):
     losses_val = []
 
     center_count = 0
+    action_list = []
     target_list = []
     predicted_list = []
     running_loss_val = 0.0
@@ -82,6 +83,7 @@ def validate_model(model, test_data):
 
             # TODO actions also calculates predicted_action_rewards so that is double right now
             actions = torch.tensor([model(i.unsqueeze(0)).min(1)[1].view(1, 1) for i in images], device=DEVICE).unsqueeze(1)
+            action_list += actions.squeeze().tolist()
             # Predicted rewards by using predicted actions
             predicted_action_reward = model(images).gather(1, actions)
             # Actual rewards by using predicted actions
@@ -106,7 +108,9 @@ def validate_model(model, test_data):
         # TODO equal print here is wrong
         # print('Equal performance of the network to center on the 500 test images: %d %%' % (100 * center_count / 500))
 
-        s.print_results(target_results=target_list, predicted_results=predicted_list)
+        actions_unique, actions_counts = np.unique(action_list, return_counts=True)
+        print('actions:', list(zip(actions_unique, actions_counts)))
+        # s.print_results(target_results=target_list, predicted_results=predicted_list)
 
 
 def plot_model(model, data):
@@ -178,8 +182,8 @@ def plot_model(model, data):
 
 if __name__ == '__main__':
     # csv containing Q_table
-    Q_Table = pd.read_csv('Q_tables/Q_table_strongfoveatedVGG.csv', sep=',')
-    # Q_Table = pd.read_csv('Q_tables/Q_table_strongfoveated.csv', sep=',')
+    # Q_Table = pd.read_csv('Q_tables/Q_table_strongfoveatedVGG.csv', sep=',')
+    Q_Table = pd.read_csv('Q_tables/Q_table_strongfoveated.csv', sep=',')
 
     # data structure for PyTorch
     loader_train, idx_to_class_train = f.loader(root=DATA_PATH_TRAIN, transform=TRANSFORM,
@@ -198,7 +202,7 @@ if __name__ == '__main__':
     # m, o, start_epoch = load_checkpoint(ckp_path, m, o)
 
     for epoch in range(N_EPOCHS):
-        print('Epoch {}'.format(epoch))
+        print('\n Epoch {}'.format(epoch))
         train_model(m, o, loader_train)
 
         checkpoint = {
