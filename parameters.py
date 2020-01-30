@@ -21,8 +21,10 @@ print("using Resolution: {}".format(RESOLUTION))
 print("using # actions: {}".format(N_ACTIONS))
 
 
-DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\nofoveation\\train'
-DATA_PATH_TEST = 'E:\\ILSVRC2017\\nofoveation\\test'
+# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\nofoveation\\train'
+# DATA_PATH_TEST = 'E:\\ILSVRC2017\\nofoveation\\test'
+DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\second_subdataset\\nofoveation\\train'
+DATA_PATH_TEST = 'E:\\ILSVRC2017\\second_subdataset\\nofoveation\\test'
 print("-- Training Parameters --")
 print("using training data: {}".format(DATA_PATH_TRAIN))
 print("using test data: {}".format(DATA_PATH_TEST))

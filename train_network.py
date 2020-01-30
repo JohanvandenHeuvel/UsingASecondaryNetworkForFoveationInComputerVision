@@ -183,7 +183,7 @@ def plot_model(model, data):
 if __name__ == '__main__':
     # csv containing Q_table
     # Q_Table = pd.read_csv('Q_tables/Q_table_strongfoveatedVGG.csv', sep=',')
-    Q_Table = pd.read_csv('Q_tables/Q_table_strongfoveated.csv', sep=',')
+    Q_Table = pd.read_csv('Q_tables/Q_table_strongfoveated_second.csv', sep=',')
 
     # data structure for PyTorch
     loader_train, idx_to_class_train = f.loader(root=DATA_PATH_TRAIN, transform=TRANSFORM,
