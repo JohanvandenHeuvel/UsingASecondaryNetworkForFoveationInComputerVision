@@ -201,7 +201,7 @@ def f(image_class, read_path, write_path):
     print("\n foveating images in {}".format(im_folder_path))
     im_paths = os.listdir(im_folder_path)
 
-    generated_fov_points = zip(*generate_foveation_points(RESOLUTION))
+    generated_fov_points = list(zip(*generate_foveation_points(RESOLUTION)))
 
     for im_path in im_paths:
         im = read_image(im_folder_path + '/' + im_path)
@@ -209,6 +209,7 @@ def f(image_class, read_path, write_path):
         os.mkdir(fovim_folder_path)
 
         for index, fov_point in generated_fov_points:
+            # print(index, fov_point)
             fov_im = foveat_img(im, [fov_point])
 
             # adding a red dot so that spotting the foveation point is easier
