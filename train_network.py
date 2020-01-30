@@ -110,7 +110,7 @@ def validate_model(model, test_data):
 
         actions_unique, actions_counts = np.unique(action_list, return_counts=True)
         print('actions:', list(zip(actions_unique, actions_counts)))
-        # s.print_results(target_results=target_list, predicted_results=predicted_list)
+        s.print_results(target_results=target_list, predicted_results=predicted_list)
 
 
 def plot_model(model, data):
