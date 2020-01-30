@@ -156,7 +156,8 @@ if __name__ == '__main__':
     loss_function = torch.nn.CrossEntropyLoss(reduce=False)
 
     # data read_path to the non-foveated images
-    DATA_PATH = "E:\\ILSVRC2017\\weakfoveation\\foveated"
+    # DATA_PATH = "E:\\ILSVRC2017\\second_subdataset\\strongfoveation"
+    DATA_PATH = "E:\\ILSVRC2017\\strongfoveation\\foveated"
     # DATA_PATH = sys.argv[1]
     loader, idx_to_class = f.loader(DATA_PATH, TRANSFORM, batch_size=N_ACTIONS, shuffle=False)
     print("using model {} with batch size of {} on {}".format(image_classifier.__class__.__name__,
@@ -167,5 +168,6 @@ if __name__ == '__main__':
     # hardcoded for now
     # qtable.columns =["class", "score"]
     indices, _ = generate_foveation_points(RESOLUTION)
-    qtable.columns = ["class"] + list(indices)
+    indices = list(np.array([str(i) for i in indices]).reshape(5, 5). transpose().flatten())
+    qtable.columns = ["class"] + indices
     qtable.to_csv('Q_tables/Q_table_new.csv', sep=",", index=False)

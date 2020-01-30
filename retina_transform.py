@@ -235,7 +235,7 @@ if __name__ == "__main__":
     #     exit(-1)
 
     # read_path = sys.argv[1]
-    read_path = 'E:\\ILSVRC2017\\second_subdataset\\original'
+    read_path = 'E:\ILSVRC2017\second_subdataset\strongfoveation'
     # read_path = 'E:\\ILSVRC2017\\smallsubset\\test'
     write_path = read_path + '\\' + 'foveated'
 
