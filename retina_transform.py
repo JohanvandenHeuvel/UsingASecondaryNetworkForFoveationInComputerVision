@@ -8,7 +8,7 @@ import time
 
 
 from tqdm import tqdm
-from parameters import RESOLUTION
+from parameters import RESOLUTION, WEAK_FOVEATION, STRONG_FOVEATION
 
 
 def genGaussiankernel(width, sigma):
@@ -49,7 +49,7 @@ def pyramid(im, sigma=1, prNum=6):
     return pyramids
 
 
-def foveat_img(im, fixs):
+def foveat_img(im, fixs, fov_params):
     """
     im: input image
     fixs: sequences of fixations of form [(x1, y1), (x2, y2), ...]
@@ -62,9 +62,9 @@ def foveat_img(im, fixs):
     height, width, _ = im.shape
 
     # compute coef
-    p = 1  # blur strength
-    k = 3  # size of foveation
-    alpha = 5  # also size?
+    p = fov_params['p']  # blur strength
+    k = fov_params['k']  # size of foveation
+    alpha = fov_params['alpha']  # also size?
 
     x = np.arange(0, width, 1, dtype=np.float32)
     y = np.arange(0, height, 1, dtype=np.float32)
@@ -165,12 +165,12 @@ def read_image(path):
     margin = int((resize_size - RESOLUTION)/2)
 
     read_im = cv2.imread(path)
-    resized_im = cv2.resize(read_im, (256, 256))
+    resized_im = cv2.resize(read_im, (resize_size, resize_size), interpolation=cv2.INTER_LINEAR)
     cropped_im = resized_im[margin:-margin, margin:-margin]
     return cropped_im
 
 
-def f_center(image_class, read_path, write_path):
+def f_center(image_class, read_path, write_path, fov_params):
     im_folder_path = read_path + '\\' + image_class
     os.mkdir(write_path + '\\' + image_class)
     print("\n foveating images in {}".format(im_folder_path))
@@ -181,10 +181,10 @@ def f_center(image_class, read_path, write_path):
 
     for im_path in im_paths:
         im = read_image(im_folder_path + '/' + im_path)
-        fov_im = foveat_img(im, [fov_point])
+        fov_im = foveat_img(im, [fov_point], fov_params)
 
         # adding a red dot so that spotting the foveation point is easier
-        cv2.circle(fov_im, fov_point, 5, (0, 0, 255), -1)
+        # cv2.circle(fov_im, fov_point, 5, (0, 0, 255), -1)
         # TODO make sure the filenames are more robust for PyTorch file loader
 
         class_folder_path = write_path + '\\' + image_class
@@ -194,8 +194,7 @@ def f_center(image_class, read_path, write_path):
         cv2.imwrite(filename, fov_im)
 
 
-
-def f(image_class, read_path, write_path):
+def f(image_class, read_path, write_path, fov_params):
     im_folder_path = read_path + '\\' + image_class
     os.mkdir(write_path + '\\' + image_class)
     print("\n foveating images in {}".format(im_folder_path))
@@ -209,11 +208,10 @@ def f(image_class, read_path, write_path):
         os.mkdir(fovim_folder_path)
 
         for index, fov_point in generated_fov_points:
-            # print(index, fov_point)
-            fov_im = foveat_img(im, [fov_point])
+            fov_im = foveat_img(im, [fov_point], fov_params)
 
             # adding a red dot so that spotting the foveation point is easier
-            cv2.circle(fov_im, fov_point, 5, (0, 0, 255), -1)
+            # cv2.circle(fov_im, fov_point, 5, (0, 0, 255), -1)
             # TODO make sure the filenames are more robust for PyTorch file loader
 
             fov_location = str(index)
@@ -227,7 +225,8 @@ if __name__ == "__main__":
     #     exit(-1)
 
     # read_path = sys.argv[1]
-    read_path = 'E:\\ILSVRC2017\\smallsubset\\test'
+    read_path = 'E:\\ILSVRC2017\\second_subdataset\\original'
+    # read_path = 'E:\\ILSVRC2017\\smallsubset\\test'
     write_path = read_path + '\\' + 'foveated'
 
     im_classes = os.listdir(read_path)
@@ -237,7 +236,7 @@ if __name__ == "__main__":
     processes = []
     for im_class in im_classes:
         # p = multiprocessing.Process(target=f_center, args=(im_class, read_path, write_path,))
-        p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path,))
+        p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path, WEAK_FOVEATION, ))
         processes.append(p)
         p.start()
 

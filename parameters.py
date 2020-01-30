@@ -29,6 +29,9 @@ print("using test data: {}".format(DATA_PATH_TEST))
 print("using batch size: {}".format(BATCH_SIZE))
 print("using # epochs: {}".format(N_EPOCHS))
 
+STRONG_FOVEATION = {'p':1, 'k':3, 'alpha':5}
+WEAK_FOVEATION = {'p':7.5, 'k':3, 'alpha':2.5}
+
 CHECKPOINT_DIR = 'checkpoints\\'
 
 NORMALIZE = T.Normalize(mean=[0.485, 0.456, 0.406],
