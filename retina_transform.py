@@ -170,6 +170,21 @@ def read_image(path):
     return cropped_im
 
 
+def f_nofoveation(image_class, read_path, write_path):
+    im_folder_path = read_path + '\\' + image_class
+    os.mkdir(write_path + '\\' + image_class)
+    print("\n foveating images in {}".format(im_folder_path))
+    im_paths = os.listdir(im_folder_path)
+
+    for im_path in im_paths:
+        im = read_image(im_folder_path + '/' + im_path)
+
+        class_folder_path = write_path + '\\' + image_class
+        suffix = '.jpg'
+        filename = class_folder_path + '/' + im_path.split('.')[0] + suffix
+        cv2.imwrite(filename, im)
+
+
 def f_center(image_class, read_path, write_path, fov_params):
     im_folder_path = read_path + '\\' + image_class
     os.mkdir(write_path + '\\' + image_class)
@@ -183,12 +198,7 @@ def f_center(image_class, read_path, write_path, fov_params):
         im = read_image(im_folder_path + '/' + im_path)
         fov_im = foveat_img(im, [fov_point], fov_params)
 
-        # adding a red dot so that spotting the foveation point is easier
-        # cv2.circle(fov_im, fov_point, 5, (0, 0, 255), -1)
-        # TODO make sure the filenames are more robust for PyTorch file loader
-
         class_folder_path = write_path + '\\' + image_class
-        fov_location = str(index)
         suffix = '.jpg'
         filename = class_folder_path + '/' + im_path.split('.')[0] + suffix
         cv2.imwrite(filename, fov_im)
@@ -236,7 +246,8 @@ if __name__ == "__main__":
     processes = []
     for im_class in im_classes:
         # p = multiprocessing.Process(target=f_center, args=(im_class, read_path, write_path,))
-        p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path, WEAK_FOVEATION, ))
+        # p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path, WEAK_FOVEATION, ))
+        p = multiprocessing.Process(target=f_nofoveation, args=(im_class, read_path, write_path,))
         processes.append(p)
         p.start()
 
