@@ -168,6 +168,6 @@ if __name__ == '__main__':
     # hardcoded for now
     # qtable.columns =["class", "score"]
     indices, _ = generate_foveation_points(RESOLUTION)
-    indices = list(np.array([str(i) for i in indices]).reshape(5, 5). transpose().flatten())
+    # indices = list(np.array([str(i) for i in indices]).reshape(5, 5). transpose().flatten())
     qtable.columns = ["class"] + indices
     qtable.to_csv('Q_tables/Q_table_new.csv', sep=",", index=False)
