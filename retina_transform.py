@@ -185,18 +185,20 @@ def f_nofoveation(image_class, read_path, write_path):
         cv2.imwrite(filename, im)
 
 
-def f_center(image_class, read_path, write_path, fov_params):
+def f_selection(image_class, read_path, write_path, fov_params, selection):
     im_folder_path = read_path + '\\' + image_class
     os.mkdir(write_path + '\\' + image_class)
     print("\n foveating images in {}".format(im_folder_path))
     im_paths = os.listdir(im_folder_path)
 
-    generated_fov_points = zip(*generate_foveation_points(RESOLUTION))
-    index, fov_point = list(generated_fov_points)[12]
+    generated_fov_points = list(zip(*generate_foveation_points(RESOLUTION)))
+    generated_fov_points = [generated_fov_points[i][1] for i in selection]
+    print(generated_fov_points)
 
     for im_path in im_paths:
         im = read_image(im_folder_path + '/' + im_path)
-        fov_im = foveat_img(im, [fov_point], fov_params)
+        fov_im = foveat_img(im, generated_fov_points, fov_params)
+        [cv2.circle(fov_im, fov_point, 5, (0, 0, 255), -1) for fov_point in generated_fov_points]
 
         class_folder_path = write_path + '\\' + image_class
         suffix = '.jpg'
@@ -236,8 +238,8 @@ if __name__ == "__main__":
     #     exit(-1)
 
     # read_path = sys.argv[1]
-    read_path = 'E:\ILSVRC2017\second_subdataset\strongfoveation'
-    # read_path = 'E:\\ILSVRC2017\\smallsubset\\test'
+    # read_path = 'E:\ILSVRC2017\second_subdataset\strongfoveation'
+    read_path = 'E:\\Dropbox\\Documents\\Year4\BachelorThesis\\Code\\Image_Foveation_Python\\images\\test'
     write_path = read_path + '\\' + 'foveated'
 
     im_classes = os.listdir(read_path)
@@ -246,9 +248,9 @@ if __name__ == "__main__":
 
     processes = []
     for im_class in im_classes:
-        # p = multiprocessing.Process(target=f_center, args=(im_class, read_path, write_path,))
+        p = multiprocessing.Process(target=f_selection, args=(im_class, read_path, write_path, STRONG_FOVEATION, [12, 17],))
         # p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path, WEAK_FOVEATION, ))
-        p = multiprocessing.Process(target=f_nofoveation, args=(im_class, read_path, write_path,))
+        # p = multiprocessing.Process(target=f_nofoveation, args=(im_class, read_path, write_path, STRONG_FOVEATOIN,))
         processes.append(p)
         p.start()
 
