@@ -198,6 +198,13 @@ def f_selection(image_class, read_path, write_path, fov_params, selection):
     for im_path in im_paths:
         im = read_image(im_folder_path + '/' + im_path)
         fov_im = foveat_img(im, generated_fov_points, fov_params)
+
+        # show red arrows between foveation locations
+        [cv2.arrowedLine(fov_im,
+                         generated_fov_points[i],
+                         generated_fov_points[i+1],
+                         (255, 0, 0), 3, tipLength=0.5) for i in range(len(generated_fov_points)-1)]
+        # show red dots at foveation locations
         [cv2.circle(fov_im, fov_point, 5, (0, 0, 255), -1) for fov_point in generated_fov_points]
 
         class_folder_path = write_path + '\\' + image_class
@@ -248,7 +255,7 @@ if __name__ == "__main__":
 
     processes = []
     for im_class in im_classes:
-        p = multiprocessing.Process(target=f_selection, args=(im_class, read_path, write_path, STRONG_FOVEATION, [12, 17],))
+        p = multiprocessing.Process(target=f_selection, args=(im_class, read_path, write_path, STRONG_FOVEATION, [12, 17, 16],))
         # p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path, WEAK_FOVEATION, ))
         # p = multiprocessing.Process(target=f_nofoveation, args=(im_class, read_path, write_path, STRONG_FOVEATOIN,))
         processes.append(p)
