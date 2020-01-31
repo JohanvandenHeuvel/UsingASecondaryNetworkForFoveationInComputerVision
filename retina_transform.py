@@ -229,6 +229,7 @@ def f(image_class, read_path, write_path, fov_params):
             filename = fovim_folder_path + '/' + im_path.split('.')[0] + '_' + fov_location + suffix
             cv2.imwrite(filename, fov_im)
 
+
 if __name__ == "__main__":
     # if len(sys.argv) != 2:
     #     print("Wrong format: python retina_transform.py [image_class/image_path]")

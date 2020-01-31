@@ -1,5 +1,6 @@
 import torchvision.transforms as T
 import torch
+import pandas as pd
 
 # if gpu is to be used
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -20,11 +21,17 @@ print("-- Data Parameters --")
 print("using Resolution: {}".format(RESOLUTION))
 print("using # actions: {}".format(N_ACTIONS))
 
+# csv containing Q_table
+Q_TABLE_TRAIN = pd.read_csv('Q_tables/Q_table_strongfoveatedVGG.csv', sep=',')
+Q_TABLE_TEST = pd.read_csv('Q_tables/Q_table_strongfoveatedVGG.csv', sep=',')
+# Q_TABLE_TRAIN = pd.read_csv('Q_tables/Q_table_strongfoveated.csv', sep=',')
+# Q_TABLE_TEST = pd.read_csv('Q_tables/Q_table_strongfoveated_second.csv', sep=',')
 
-# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\nofoveation\\train'
-# DATA_PATH_TEST = 'E:\\ILSVRC2017\\nofoveation\\test'
-DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\second_subdataset\\nofoveation\\train'
-DATA_PATH_TEST = 'E:\\ILSVRC2017\\second_subdataset\\nofoveation\\test'
+DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\nofoveation\\train'
+DATA_PATH_TEST = 'E:\\ILSVRC2017\\nofoveation\\test'
+# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\second_subdataset\\nofoveation\\train'
+# DATA_PATH_TEST = 'E:\\ILSVRC2017\\second_subdataset\\nofoveation\\test'
+
 print("-- Training Parameters --")
 print("using training data: {}".format(DATA_PATH_TRAIN))
 print("using test data: {}".format(DATA_PATH_TEST))
