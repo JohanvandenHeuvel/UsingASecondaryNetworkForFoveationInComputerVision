@@ -92,9 +92,14 @@ def validate_model(model, test_data):
             # Actual rewards by using center action
             center_rewards = torch.tensor([image_reward(image_name[i], 12, Q_TABLE_TEST) for i in range(len(images))], device=DEVICE)
 
-            loss = F.mse_loss(predicted_action_reward, actual_action_reward.unsqueeze(1))
-            losses_val.append(loss.item())
-            running_loss_val += loss.item()
+            loss = F.mse_loss(predicted_action_reward, actual_action_reward.unsqueeze(1), reduction='none')
+            if not len(loss) == 1:
+                sum_loss = sum([item for sublist in loss.tolist() for item in sublist])
+                losses_val.append(sum_loss)
+                running_loss_val += sum_loss
+            else:
+                losses_val.append(loss.item())
+                running_loss_val += loss.item()
 
             predicted_list += actual_action_reward.tolist()
             target_list += center_rewards.tolist()
@@ -103,7 +108,7 @@ def validate_model(model, test_data):
             # center = torch.tensor([torch.ones([1, 1]) * 12 for _ in range(len(images))], dtype=torch.long, device=DEVICE)
             # center_count += (actions == center).sum().item()
 
-        print("running [validation] loss over {} batches".format(n_batches_test), running_loss_val)
+        print("running [validation] loss over {} batches".format(n_batches_test), running_loss_val/n_batches_test)
         # TODO fix hard coding 500 for test set length
         # TODO equal print here is wrong
         # print('Equal performance of the network to center on the 500 test images: %d %%' % (100 * center_count / 500))
@@ -192,9 +197,9 @@ if __name__ == '__main__':
     # Networks
     m = network.DQN(RESOLUTION, RESOLUTION, N_ACTIONS)
     m = m.to(DEVICE)
-    o = optim.Adam(m.parameters())
+    o = optim.Adam(m.parameters(), lr=1e-5)
 
-    # ckp_path = CHECKPOINT_DIR + 'checkpoint_29.pt'
+    # ckp_path = CHECKPOINT_DIR + 'checkpoint_59.pt'
     # m, o, start_epoch = load_checkpoint(ckp_path, m, o)
 
     for epoch in range(N_EPOCHS):

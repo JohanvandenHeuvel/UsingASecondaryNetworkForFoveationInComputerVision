@@ -16,14 +16,16 @@ with open('imagenet1000_clsname_to_clsidx.txt', 'r') as inf:
 RESOLUTION = 224
 N_ACTIONS = 25
 BATCH_SIZE = 32
-N_EPOCHS = 30
+N_EPOCHS = 100
 print("-- Data Parameters --")
 print("using Resolution: {}".format(RESOLUTION))
 print("using # actions: {}".format(N_ACTIONS))
 
 # csv containing Q_table
-Q_TABLE_TRAIN = pd.read_csv('Q_tables/Q_table_strongfoveatedVGG.csv', sep=',')
-Q_TABLE_TEST = pd.read_csv('Q_tables/Q_table_strongfoveatedVGG.csv', sep=',')
+Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated.csv'
+Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated.csv'
+Q_TABLE_TRAIN = pd.read_csv(Q_TABLE_TRAIN_path, sep=',')
+Q_TABLE_TEST = pd.read_csv(Q_TABLE_TEST_path, sep=',')
 # Q_TABLE_TRAIN = pd.read_csv('Q_tables/Q_table_strongfoveated.csv', sep=',')
 # Q_TABLE_TEST = pd.read_csv('Q_tables/Q_table_strongfoveated_second.csv', sep=',')
 
@@ -35,6 +37,8 @@ DATA_PATH_TEST = 'E:\\ILSVRC2017\\nofoveation\\test'
 print("-- Training Parameters --")
 print("using training data: {}".format(DATA_PATH_TRAIN))
 print("using test data: {}".format(DATA_PATH_TEST))
+print("using q-table for training data: {}".format(Q_TABLE_TRAIN_path))
+print("using q-table for test data: {}".format(Q_TABLE_TEST_path))
 print("using batch size: {}".format(BATCH_SIZE))
 print("using # epochs: {}".format(N_EPOCHS))
 
