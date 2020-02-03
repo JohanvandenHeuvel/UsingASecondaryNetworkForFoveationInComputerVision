@@ -16,12 +16,15 @@ def save_checkpoint(state, _, epoch_count):
     #     shutil.copyfile(f_path, best_fpath)
 
 
-def load_checkpoint(checkpoint, model, optimizer):
+def load_checkpoint(checkpoint, model, optimizer=None):
     print("loading checkpoint")
     # checkpoint = torch.load(checkpoint_fpath)
     model.load_state_dict(checkpoint['state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer'])
-    return model, optimizer, checkpoint['epoch']
+    if optimizer is None:
+        return checkpoint['epoch'], model
+    else:
+        optimizer.load_state_dict(checkpoint['optimizer'])
+        return checkpoint['epoch'], model, optimizer
 
 
 def minimum_values(df):
@@ -108,11 +111,10 @@ def select_action(images, n_actions, device, eps_threshold=-1):
 Functions for the checkpoints
 """
 
-
 class Run:
 
     def __init__(self, path):
-        print('using {} and reading results from {}'.format(path, path + '\\' + 'results.txt'))
+        print('using: {} \n reading results from {}'.format(path, path + '\\' + 'results.txt'))
         self.path = path
 
     def get_values(self):

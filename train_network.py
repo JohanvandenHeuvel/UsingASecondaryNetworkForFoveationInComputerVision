@@ -21,16 +21,13 @@ def image_reward(img_name, action, Q_Table):
         return row[action + 1]
 
 
-
-
-
-def train_model(model, optimizer, training_data):
+def train_model(model, optimizer, training_data, idx_to_class):
     print("training ...")
     model.train()
     running_loss = 0.0
     for images, labels, paths in tqdm(training_data):
         images = images.to(DEVICE)
-        image_class = [idx_to_class_train[l.item()] for l in labels]
+        image_class = [idx_to_class[l.item()] for l in labels]
         image_name = [f.path_to_image_name(paths[i], image_class[i]) for i in range(len(images))]
 
         actions = torch.tensor(np.random.randint(0, N_ACTIONS, len(images)), dtype=torch.long, device=DEVICE).unsqueeze(1)
@@ -51,7 +48,7 @@ def train_model(model, optimizer, training_data):
     print("running [training] loss over {} batches".format(n_batches), running_loss)
 
 
-def validate_model(model, test_data):
+def validate_model(model, test_data, idx_to_class):
     print("validating ...")
     model.eval()
     losses_val = []
@@ -64,7 +61,7 @@ def validate_model(model, test_data):
     with torch.no_grad():
         for images, labels, paths in tqdm(test_data):
             images = images.to(DEVICE)
-            image_class = [idx_to_class_test[l.item()] for l in labels]
+            image_class = [idx_to_class[l.item()] for l in labels]
             image_name = [f.path_to_image_name(paths[i], image_class[i]) for i in range(len(images))]
 
             # TODO actions also calculates predicted_action_rewards so that is double right now
@@ -94,7 +91,7 @@ def validate_model(model, test_data):
             # center = torch.tensor([torch.ones([1, 1]) * 12 for _ in range(len(images))], dtype=torch.long, device=DEVICE)
             # center_count += (actions == center).sum().item()
 
-        print("running [validation] loss over {} batches".format(n_batches_test), running_loss_val/n_batches_test)
+        print("running [validation] loss over {} batches".format(len(test_data)), running_loss_val/len(test_data))
         # TODO fix hard coding 500 for test set length
         # TODO equal print here is wrong
         # print('Equal performance of the network to center on the 500 test images: %d %%' % (100 * center_count / 500))
@@ -186,12 +183,14 @@ if __name__ == '__main__':
     o = optim.Adam(m.parameters(), lr=1e-5)
 
     start_epoch = 0
-    run = f.Run(CHECKPOINT_DIR + '31-01-2020 trying out new params')
-    m, o, start_epoch = f.load_checkpoint(run.get_checkpoint('40'), m, o)
+    run = f.Run(CHECKPOINT_DIR + '\\31-01-2020 trying out new params')
+    start_epoch, m, o = f.load_checkpoint(run.get_checkpoint('145'), m, o)
 
-    # for epoch in range(N_EPOCHS):
+    validate_model(m, loader_test, idx_to_class_test)
+
+    # for epoch in range(1):
     #     print('\n Epoch {}'.format(start_epoch + epoch))
-    #     train_model(m, o, loader_train)
+    #     train_model(m, o, loader_train, idx_to_class_train)
     #
     #     checkpoint = {
     #         'epoch': start_epoch + epoch + 1,
@@ -200,4 +199,4 @@ if __name__ == '__main__':
     #     }
     #     f.save_checkpoint(checkpoint, CHECKPOINT_DIR, start_epoch + epoch)
     #
-    #     validate_model(m, loader_test)
+    #     validate_model(m, loader_test, idx_to_class_test)
