@@ -21,21 +21,7 @@ def image_reward(img_name, action, Q_Table):
         return row[action + 1]
 
 
-def save_checkpoint(state, _, epoch_count):
-    print("saving checkpoint")
-    f_path = 'checkpoints\\checkpoint_{}.pt'.format(epoch_count)
-    torch.save(state, f_path)
-    # if is_best:
-    #     best_fpath = 'checkpoints\\best_model.pt'
-    #     shutil.copyfile(f_path, best_fpath)
 
-
-def load_checkpoint(checkpoint_fpath, model, optimizer):
-    print("loading checkpoint")
-    checkpoint = torch.load(checkpoint_fpath)
-    model.load_state_dict(checkpoint['state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer'])
-    return model, optimizer, checkpoint['epoch']
 
 
 def train_model(model, optimizer, training_data):
@@ -199,18 +185,19 @@ if __name__ == '__main__':
     m = m.to(DEVICE)
     o = optim.Adam(m.parameters(), lr=1e-5)
 
-    # ckp_path = CHECKPOINT_DIR + 'checkpoint_59.pt'
-    # m, o, start_epoch = load_checkpoint(ckp_path, m, o)
+    start_epoch = 0
+    # run = f.Run(CHECKPOINT_DIR + '31-01-2020 trying out new params')
+    # m, o, start_epoch = f.load_checkpoint(run.get_checkpoint('40'), m, o)
 
     for epoch in range(N_EPOCHS):
-        print('\n Epoch {}'.format(epoch))
+        print('\n Epoch {}'.format(start_epoch + epoch))
         train_model(m, o, loader_train)
 
         checkpoint = {
-            'epoch': epoch + 1,
+            'epoch': start_epoch + epoch + 1,
             'state_dict': m.state_dict(),
             'optimizer': o.state_dict()
         }
-        save_checkpoint(checkpoint, CHECKPOINT_DIR, epoch)
+        f.save_checkpoint(checkpoint, CHECKPOINT_DIR, start_epoch + epoch)
 
         validate_model(m, loader_test)

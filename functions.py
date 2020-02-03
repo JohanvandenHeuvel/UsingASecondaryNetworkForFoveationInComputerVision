@@ -6,11 +6,30 @@ import pandas as pd
 
 from custom_dataset import ImageLoaderCustom
 
+
+def save_checkpoint(state, _, epoch_count):
+    print("saving checkpoint")
+    f_path = 'checkpoints\\checkpoint_{}.pt'.format(epoch_count)
+    torch.save(state, f_path)
+    # if is_best:
+    #     best_fpath = 'checkpoints\\best_model.pt'
+    #     shutil.copyfile(f_path, best_fpath)
+
+
+def load_checkpoint(checkpoint, model, optimizer):
+    print("loading checkpoint")
+    # checkpoint = torch.load(checkpoint_fpath)
+    model.load_state_dict(checkpoint['state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer'])
+    return model, optimizer, checkpoint['epoch']
+
+
 def minimum_values(df):
-    weak_min = []
+    min_values = []
     for i, row in df.iterrows():
-        weak_min.append(row[1:].min())
-    weak_min = pd.Series(weak_min)
+        min_values.append(row[1:].min())
+    return pd.Series(min_values)
+
 
 def loader(root, transform, batch_size, shuffle):
     dataset = ImageLoaderCustom(
@@ -84,3 +103,47 @@ def select_action(images, n_actions, device, eps_threshold=-1):
                 actions.append(torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long))
 
     return torch.tensor(actions, device=device)
+
+"""
+Functions for the checkpoints
+"""
+
+
+class Run:
+
+    def __init__(self, path):
+        print('using {} and reading results from {}'.format(path, path + '\\' + 'results.txt'))
+        self.path = path
+        self.file = open(path + '\\' + 'results.txt', 'r')
+
+    def get_values(self):
+        lines = self.file.readlines()
+
+        training_lines = [line.strip().split(' ') for line in lines if '[training]' in line]
+        training_values = [float(line[-1]) for line in training_lines]
+
+        validation_lines = [line.strip().split(' ') for line in lines if '[validation]' in line]
+        validation_values = [float(line[-1]) for line in validation_lines]
+
+        return training_values, validation_values
+
+    def get_checkpoint(self, epoch):
+        return torch.load(self.path + '\\' + 'checkpoint_{}.pt'.format(epoch))
+
+    def plot_loss(self):
+        training_values, validation_values = self.get_values()
+
+        plt.plot(training_values)
+        plt.plot(validation_values)
+        plt.legend(['training', 'validation'])
+        plt.xlabel('epochs')
+        plt.ylabel('MSE loss')
+        plt.show()
+
+    def lowest_validation(self, n=10):
+        training_values, validation_values = self.get_values()
+
+        df = pd.concat([pd.Series(validation_values), pd.Series(training_values)], axis=1)
+        df.columns = ['validation', 'training']
+
+        return df.sort_values('validation').head(n)
