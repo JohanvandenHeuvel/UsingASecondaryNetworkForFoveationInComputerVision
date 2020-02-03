@@ -46,7 +46,8 @@ print("using # epochs: {}".format(N_EPOCHS))
 STRONG_FOVEATION = {'p':1, 'k':3, 'alpha':5}
 WEAK_FOVEATION = {'p':7.5, 'k':3, 'alpha':2.5}
 
-CHECKPOINT_DIR = 'checkpoints\\'
+CHECKPOINT_DIR = 'E:\\Dropbox\\Documents\\Year4\\BachelorThesis\\UsingASecondaryNetworkForFoveationInComputerVision\\checkpoints'
+
 
 NORMALIZE = T.Normalize(mean=[0.485, 0.456, 0.406],
                         std=[0.229, 0.224, 0.225])

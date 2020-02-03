@@ -114,10 +114,10 @@ class Run:
     def __init__(self, path):
         print('using {} and reading results from {}'.format(path, path + '\\' + 'results.txt'))
         self.path = path
-        self.file = open(path + '\\' + 'results.txt', 'r')
 
     def get_values(self):
-        lines = self.file.readlines()
+        file = open(self.path + '\\' + 'results.txt', 'r')
+        lines = file.readlines()
 
         training_lines = [line.strip().split(' ') for line in lines if '[training]' in line]
         training_values = [float(line[-1]) for line in training_lines]

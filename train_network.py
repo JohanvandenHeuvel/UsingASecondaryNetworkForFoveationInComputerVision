@@ -186,18 +186,18 @@ if __name__ == '__main__':
     o = optim.Adam(m.parameters(), lr=1e-5)
 
     start_epoch = 0
-    # run = f.Run(CHECKPOINT_DIR + '31-01-2020 trying out new params')
-    # m, o, start_epoch = f.load_checkpoint(run.get_checkpoint('40'), m, o)
+    run = f.Run(CHECKPOINT_DIR + '31-01-2020 trying out new params')
+    m, o, start_epoch = f.load_checkpoint(run.get_checkpoint('40'), m, o)
 
-    for epoch in range(N_EPOCHS):
-        print('\n Epoch {}'.format(start_epoch + epoch))
-        train_model(m, o, loader_train)
-
-        checkpoint = {
-            'epoch': start_epoch + epoch + 1,
-            'state_dict': m.state_dict(),
-            'optimizer': o.state_dict()
-        }
-        f.save_checkpoint(checkpoint, CHECKPOINT_DIR, start_epoch + epoch)
-
-        validate_model(m, loader_test)
+    # for epoch in range(N_EPOCHS):
+    #     print('\n Epoch {}'.format(start_epoch + epoch))
+    #     train_model(m, o, loader_train)
+    #
+    #     checkpoint = {
+    #         'epoch': start_epoch + epoch + 1,
+    #         'state_dict': m.state_dict(),
+    #         'optimizer': o.state_dict()
+    #     }
+    #     f.save_checkpoint(checkpoint, CHECKPOINT_DIR, start_epoch + epoch)
+    #
+    #     validate_model(m, loader_test)
