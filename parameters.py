@@ -16,24 +16,32 @@ with open('imagenet1000_clsname_to_clsidx.txt', 'r') as inf:
 RESOLUTION = 224
 N_ACTIONS = 25
 BATCH_SIZE = 32
-N_EPOCHS = 100
+N_EPOCHS = 150
 print("-- Data Parameters --")
 print("using Resolution: {}".format(RESOLUTION))
 print("using # actions: {}".format(N_ACTIONS))
 
 # csv containing Q_table
-Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated.csv'
-Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated.csv'
+# Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated.csv'
+# Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated.csv'
 # Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_second.csv'
 # Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_second.csv'
+# Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_first10.csv'
+# Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_first10.csv'
+Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_second10.csv'
+Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_second10.csv'
 
 Q_TABLE_TRAIN = pd.read_csv(Q_TABLE_TRAIN_path, sep=',')
 Q_TABLE_TEST = pd.read_csv(Q_TABLE_TEST_path, sep=',')
 
-DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\nofoveation\\train'
-DATA_PATH_TEST = 'E:\\ILSVRC2017\\nofoveation\\test'
+# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\nofoveation\\train'
+# DATA_PATH_TEST = 'E:\\ILSVRC2017\\nofoveation\\test'
 # DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\second_subdataset\\nofoveation\\train'
 # DATA_PATH_TEST = 'E:\\ILSVRC2017\\second_subdataset\\nofoveation\\test'
+# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\10classesfirst\\nofoveation\\train'
+# DATA_PATH_TEST = 'E:\\ILSVRC2017\\10classesfirst\\nofoveation\\test'
+DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\10classessecond\\nofoveation\\train'
+DATA_PATH_TEST = 'E:\\ILSVRC2017\\10classessecond\\nofoveation\\test'
 
 print("-- Training Parameters --")
 print("using training data: {}".format(DATA_PATH_TRAIN))
@@ -47,7 +55,6 @@ STRONG_FOVEATION = {'p':1, 'k':3, 'alpha':5}
 WEAK_FOVEATION = {'p':7.5, 'k':3, 'alpha':2.5}
 
 CHECKPOINT_DIR = 'E:\\Dropbox\\Documents\\Year4\\BachelorThesis\\UsingASecondaryNetworkForFoveationInComputerVision\\checkpoints'
-
 
 NORMALIZE = T.Normalize(mean=[0.485, 0.456, 0.406],
                         std=[0.229, 0.224, 0.225])

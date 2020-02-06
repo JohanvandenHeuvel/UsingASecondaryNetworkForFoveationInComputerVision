@@ -246,7 +246,9 @@ if __name__ == "__main__":
 
     # read_path = sys.argv[1]
     # read_path = 'E:\ILSVRC2017\second_subdataset\strongfoveation'
-    read_path = 'E:\\Dropbox\\Documents\\Year4\BachelorThesis\\Code\\Image_Foveation_Python\\images\\test'
+    read_path = 'E:\\ILSVRC2017\\10classessecond\\original'
+
+    # write_path = read_path + '\\' + 'nofoveation'
     write_path = read_path + '\\' + 'foveated'
 
     im_classes = os.listdir(read_path)
@@ -255,9 +257,9 @@ if __name__ == "__main__":
 
     processes = []
     for im_class in im_classes:
-        p = multiprocessing.Process(target=f_selection, args=(im_class, read_path, write_path, STRONG_FOVEATION, [12, 17, 16],))
-        # p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path, WEAK_FOVEATION, ))
-        # p = multiprocessing.Process(target=f_nofoveation, args=(im_class, read_path, write_path, STRONG_FOVEATOIN,))
+        # p = multiprocessing.Process(target=f_selection, args=(im_class, read_path, write_path, STRONG_FOVEATION, [12, 17, 16],))
+        p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path, STRONG_FOVEATION, ))
+        # p = multiprocessing.Process(target=f_nofoveation, args=(im_class, read_path, write_path,))
         processes.append(p)
         p.start()
 

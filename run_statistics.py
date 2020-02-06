@@ -7,7 +7,6 @@ from scipy import stats
 from tqdm import tqdm
 
 import torch
-import torchvision.transforms as T
 
 import train_network
 import network as net
@@ -77,6 +76,7 @@ def print_results(predicted_results=None, target_results=None, random_results=No
             # TODO fix text "network then center"
             print('{} performance of the network then center on the {} test images: {}%'.format(s, len(x), val))
         print(statistic_comparison(x, y))
+        print(statistic_comparison(x, y, alternative='less'))
 
     if predicted_results is not None and target_results is not None:
         print('\n', '=== predicted vs target ===')
