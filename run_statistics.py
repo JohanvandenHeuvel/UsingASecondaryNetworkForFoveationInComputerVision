@@ -15,7 +15,7 @@ from parameters import BATCH_SIZE, RESOLUTION, N_ACTIONS, DATA_PATH_TEST, TRANSF
 
 
 def generate_random(idx_to_class, loader):
-    random_list = np.zeros(500)
+    random_list = np.zeros(1000)
     n_samples = 30
     with torch.no_grad():
         print('generating {} random samples ... \n'.format(n_samples))

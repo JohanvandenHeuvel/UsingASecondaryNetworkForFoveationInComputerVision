@@ -258,7 +258,8 @@ if __name__ == "__main__":
     processes = []
     for im_class in im_classes:
         # p = multiprocessing.Process(target=f_selection, args=(im_class, read_path, write_path, STRONG_FOVEATION, [12, 17, 16],))
-        p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path, STRONG_FOVEATION, ))
+        p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path, WEAK_FOVEATION, ))
+        # p = multiprocessing.Process(target=f, args=(im_class, read_path, write_path, STRONG_FOVEATION, ))
         # p = multiprocessing.Process(target=f_nofoveation, args=(im_class, read_path, write_path,))
         processes.append(p)
         p.start()

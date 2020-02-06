@@ -22,26 +22,26 @@ print("using Resolution: {}".format(RESOLUTION))
 print("using # actions: {}".format(N_ACTIONS))
 
 # csv containing Q_table
-# Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated.csv'
-# Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated.csv'
-# Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_second.csv'
-# Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_second.csv'
-# Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_first10.csv'
-# Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_first10.csv'
-Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_second10.csv'
-Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_second10.csv'
+# Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_first5.csv'
+# Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_first5.csv'
+# Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_second5.csv'
+# Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_second5.csv'
+Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_first10.csv'
+Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_first10.csv'
+# Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_second10.csv'
+# Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_second10.csv'
 
 Q_TABLE_TRAIN = pd.read_csv(Q_TABLE_TRAIN_path, sep=',')
 Q_TABLE_TEST = pd.read_csv(Q_TABLE_TEST_path, sep=',')
 
-# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\nofoveation\\train'
-# DATA_PATH_TEST = 'E:\\ILSVRC2017\\nofoveation\\test'
-# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\second_subdataset\\nofoveation\\train'
-# DATA_PATH_TEST = 'E:\\ILSVRC2017\\second_subdataset\\nofoveation\\test'
-# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\10classesfirst\\nofoveation\\train'
-# DATA_PATH_TEST = 'E:\\ILSVRC2017\\10classesfirst\\nofoveation\\test'
-DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\10classessecond\\nofoveation\\train'
-DATA_PATH_TEST = 'E:\\ILSVRC2017\\10classessecond\\nofoveation\\test'
+# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\5classesfirst\\nofoveation\\train'
+# DATA_PATH_TEST = 'E:\\ILSVRC2017\\5classesfirst\\nofoveation\\test'
+# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\5classessecond\\nofoveation\\train'
+# DATA_PATH_TEST = 'E:\\ILSVRC2017\\5classessecond\\nofoveation\\test'
+DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\10classesfirst\\nofoveation\\train'
+DATA_PATH_TEST = 'E:\\ILSVRC2017\\10classesfirst\\nofoveation\\test'
+# DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\10classessecond\\nofoveation\\train'
+# DATA_PATH_TEST = 'E:\\ILSVRC2017\\10classessecond\\nofoveation\\test'
 
 print("-- Training Parameters --")
 print("using training data: {}".format(DATA_PATH_TRAIN))
