@@ -26,13 +26,18 @@ print("using # actions: {}".format(N_ACTIONS))
 # Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_first5.csv'
 # Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_second5.csv'
 # Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_second5.csv'
-Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_first10.csv'
-Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_first10.csv'
+# Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_first10.csv'
+# Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_first10.csv'
 # Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveated_second10.csv'
 # Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveated_second10.csv'
 
+Q_TABLE_TRAIN_path = 'Q_tables\\Q_table_strongfoveatedVGG_first10.csv'
+Q_TABLE_TEST_path = 'Q_tables\\Q_table_strongfoveatedVGG_first10.csv'
+Q_TABLE_TEST_path2 = 'Q_tables\\Q_table_strongfoveatedVGG_second10.csv'
+
 Q_TABLE_TRAIN = pd.read_csv(Q_TABLE_TRAIN_path, sep=',')
 Q_TABLE_TEST = pd.read_csv(Q_TABLE_TEST_path, sep=',')
+Q_TABLE_TEST2 = pd.read_csv(Q_TABLE_TEST_path2, sep=',')
 
 # DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\5classesfirst\\nofoveation\\train'
 # DATA_PATH_TEST = 'E:\\ILSVRC2017\\5classesfirst\\nofoveation\\test'
@@ -40,19 +45,22 @@ Q_TABLE_TEST = pd.read_csv(Q_TABLE_TEST_path, sep=',')
 # DATA_PATH_TEST = 'E:\\ILSVRC2017\\5classessecond\\nofoveation\\test'
 DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\10classesfirst\\nofoveation\\train'
 DATA_PATH_TEST = 'E:\\ILSVRC2017\\10classesfirst\\nofoveation\\test'
+DATA_PATH_TEST2 = 'E:\\ILSVRC2017\\10classessecond\\nofoveation\\test'
 # DATA_PATH_TRAIN = 'E:\\ILSVRC2017\\10classessecond\\nofoveation\\train'
 # DATA_PATH_TEST = 'E:\\ILSVRC2017\\10classessecond\\nofoveation\\test'
 
 print("-- Training Parameters --")
 print("using training data: {}".format(DATA_PATH_TRAIN))
 print("using test data: {}".format(DATA_PATH_TEST))
+print("using second test data: {}".format(DATA_PATH_TEST2))
 print("using q-table for training data: {}".format(Q_TABLE_TRAIN_path))
 print("using q-table for test data: {}".format(Q_TABLE_TEST_path))
+print("using q-table for second test data: {}".format(Q_TABLE_TEST_path2))
 print("using batch size: {}".format(BATCH_SIZE))
 print("using # epochs: {}".format(N_EPOCHS))
 
-STRONG_FOVEATION = {'p':1, 'k':3, 'alpha':5}
-WEAK_FOVEATION = {'p':7.5, 'k':3, 'alpha':2.5}
+STRONG_FOVEATION = {'p': 1, 'k': 3, 'alpha': 5}
+WEAK_FOVEATION = {'p': 7.5, 'k': 3, 'alpha': 2.5}
 
 CHECKPOINT_DIR = 'E:\\Dropbox\\Documents\\Year4\\BachelorThesis\\UsingASecondaryNetworkForFoveationInComputerVision\\checkpoints'
 

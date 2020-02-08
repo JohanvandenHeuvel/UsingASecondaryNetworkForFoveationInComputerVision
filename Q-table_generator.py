@@ -112,7 +112,7 @@ def generate_qtable(data):
     losses = pd.DataFrame()
     for images, labels, paths in tqdm(data):
 
-        assert len(images) == N_ACTIONS, "batch_size not equal to n_actions"
+        # assert len(images) == N_ACTIONS, "batch_size not equal to n_actions"
 
         # get image name for this batch
         # i.e. for the form class_sample
@@ -148,25 +148,25 @@ if __name__ == '__main__':
     #     print("Wrong format: python Q-table_generator.py [folder/class/image_path]")
     #     exit(-1)
 
-    # image_classifier = models.vgg16(pretrained=True)
-    image_classifier = models.mobilenet_v2(pretrained=True)
+    image_classifier = models.vgg16(pretrained=True)
+    # image_classifier = models.mobilenet_v2(pretrained=True)
     image_classifier.to(DEVICE)
     image_classifier.eval()
 
     loss_function = torch.nn.CrossEntropyLoss(reduce=False)
 
     # data read_path to the non-foveated images
-    DATA_PATH = 'E:\\ILSVRC2017\\10classesfirst\\weakfoveated'
+    DATA_PATH = 'E:\\ILSVRC2017\\10classesfirst\\nofoveation\\temp'
     # DATA_PATH = "E:\\ILSVRC2017\\strongfoveation\\foveated"
     # DATA_PATH = sys.argv[1]
-    loader, idx_to_class = f.loader(DATA_PATH, TRANSFORM, batch_size=N_ACTIONS, shuffle=False)
+    loader, idx_to_class = f.loader(DATA_PATH, TRANSFORM, batch_size=1, shuffle=False)
     print("using model {} with batch size of {} on {}".format(image_classifier.__class__.__name__,
                                                               N_ACTIONS,
                                                               DATA_PATH))
 
     qtable = generate_qtable(loader)
     # hardcoded for now
-    # qtable.columns =["class", "score"]
+    qtable.columns =["class", "score"]
     indices, _ = generate_foveation_points(RESOLUTION)
-    qtable.columns = ["class"] + indices
+    # qtable.columns = ["class"] + indices
     qtable.to_csv('Q_tables/Q_table_new.csv', sep=",", index=False)

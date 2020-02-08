@@ -9,7 +9,7 @@ from tqdm import tqdm
 import functions as f
 import network
 import run_statistics as s
-from parameters import N_ACTIONS, RESOLUTION, DATA_PATH_TRAIN, DATA_PATH_TEST, BATCH_SIZE, N_EPOCHS, CHECKPOINT_DIR, TRANSFORM, DEVICE, Q_TABLE_TEST, Q_TABLE_TRAIN
+from parameters import N_ACTIONS, RESOLUTION, DATA_PATH_TRAIN, DATA_PATH_TEST, BATCH_SIZE, N_EPOCHS, CHECKPOINT_DIR, TRANSFORM, DEVICE, Q_TABLE_TEST, Q_TABLE_TRAIN, Q_TABLE_TEST2, DATA_PATH_TEST2
 
 
 def image_reward(img_name, action, Q_Table):
@@ -48,7 +48,7 @@ def train_model(model, optimizer, training_data, idx_to_class):
     print("running [training] loss over {} batches".format(n_batches), running_loss)
 
 
-def validate_model(model, test_data, idx_to_class):
+def validate_model(model, test_data, idx_to_class, q_table, prefix):
     print("validating ...")
     model.eval()
     losses_val = []
@@ -70,10 +70,10 @@ def validate_model(model, test_data, idx_to_class):
             # Predicted rewards by using predicted actions
             predicted_action_reward = model(images).gather(1, actions)
             # Actual rewards by using predicted actions
-            actual_action_reward = torch.tensor([image_reward(image_name[i], actions[i], Q_TABLE_TEST) for i in range(len(images))],
+            actual_action_reward = torch.tensor([image_reward(image_name[i], actions[i], q_table) for i in range(len(images))],
                                                 device=DEVICE)
             # Actual rewards by using center action
-            center_rewards = torch.tensor([image_reward(image_name[i], 12, Q_TABLE_TEST) for i in range(len(images))], device=DEVICE)
+            center_rewards = torch.tensor([image_reward(image_name[i], 12, q_table) for i in range(len(images))], device=DEVICE)
 
             loss = F.mse_loss(predicted_action_reward, actual_action_reward.unsqueeze(1), reduction='none')
             if not len(loss) == 1:
@@ -91,7 +91,7 @@ def validate_model(model, test_data, idx_to_class):
             # center = torch.tensor([torch.ones([1, 1]) * 12 for _ in range(len(images))], dtype=torch.long, device=DEVICE)
             # center_count += (actions == center).sum().item()
 
-        print("running [validation] loss over {} batches".format(len(test_data)), running_loss_val/len(test_data))
+        print("running [{}_validation] loss over {} batches".format(prefix, len(test_data)), running_loss_val/len(test_data))
         # TODO fix hard coding 500 for test set length
         # TODO equal print here is wrong
         # print('Equal performance of the network to center on the 500 test images: %d %%' % (100 * center_count / 500))
@@ -174,6 +174,8 @@ if __name__ == '__main__':
                                                 batch_size=BATCH_SIZE, shuffle=True)
     loader_test, idx_to_class_test = f.loader(root=DATA_PATH_TEST, transform=TRANSFORM,
                                               batch_size=BATCH_SIZE, shuffle=False)
+    loader_test2, idx_to_class_test2 = f.loader(root=DATA_PATH_TEST2, transform=TRANSFORM,
+                                              batch_size=BATCH_SIZE, shuffle=False)
     n_batches = len(loader_train)
     n_batches_test = len(loader_test)
 
@@ -184,7 +186,7 @@ if __name__ == '__main__':
 
     start_epoch = 0
     run = f.Run(CHECKPOINT_DIR)
-    start_epoch, m, o = f.load_checkpoint(run.get_checkpoint('19'), m, o)
+    start_epoch, m, o = f.load_checkpoint(run.get_checkpoint('32'), m, o)
 
     # validate_model(m, loader_test, idx_to_class_test)
 
@@ -199,4 +201,7 @@ if __name__ == '__main__':
         }
         f.save_checkpoint(checkpoint, CHECKPOINT_DIR, start_epoch + epoch)
 
-        validate_model(m, loader_test, idx_to_class_test)
+        print('FIRST VALIDATION')
+        validate_model(m, loader_test, idx_to_class_test, Q_TABLE_TEST, "first")
+        print('SECOND VALIDATION')
+        validate_model(m, loader_test2, idx_to_class_test2, Q_TABLE_TEST2, "second")
