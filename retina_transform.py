@@ -1,3 +1,8 @@
+"""
+Original code from (with minor changes):
+https://github.com/ouyangzhibo/Image_Foveation_Python
+"""
+
 import cv2
 import numpy as np
 import sys
